@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=375, user-scalable=no">
+  <title>Countdown to Rafa</title>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&display=swap" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      font-family: 'Fredoka One', cursive;
+        background: url('bg.png') no-repeat center center fixed;
+      color: #fff;
+      text-align: center;
+      overflow-x: hidden;
+    }
+    .photo-strip {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      padding: 20px;
+      flex-wrap: wrap;
+    }
+    .photo-strip img {
+      width: 80px;
+      height: 80px;
+      object-fit: cover;
+      border-radius: 12px;
+      border: 3px solid white;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    }
+    h1 {
+      font-size: 2rem;
+      margin: 20px 10px;
+    }
+    .countdown {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      margin-bottom: 30px;
+      flex-wrap: wrap;
+      padding: 0 10px;
+    }
+    .time-box {
+      position: relative;
+      width: 80px;
+      height: 80px;
+      background-color: transparent;
+    }
+    .time-box::before {
+      content: "";
+      position: absolute;
+      width: 80px;
+      height: 70px;
+      background: white;
+      clip-path: path('M40 70 C15 55, 0 40, 0 24 C0 8, 20 0, 40 15 C60 0, 80 8, 80 24 C80 40, 65 55, 40 70 Z');
+      top: 0;
+      left: 0;
+      z-index: 0;
+    }
+    .time-box div:first-child {
+      position: relative;
+      z-index: 1;
+      color: #ff1493;
+      font-size: 1.4rem;
+      line-height: 70px;
+    }
+    .label {
+      font-size: 0.7rem;
+      margin-top: 5px;
+      color: white;
+    }
+    .confetti {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 100;
+    }
+  </style>
+</head>
+<body>
+  <div class="photo-strip">
+    <img src="photo1.jpg" alt="Photo 1">
+    <img src="photo2.jpg" alt="Photo 2">
+    <img src="photo3.jpg" alt="Photo 3">
+    <img src="photo4.jpg" alt="Photo 4">
+    <img src="photo5.jpg" alt="Photo 5">
+  </div>
+
+  <h1>Countdown until Rafaellie reunites! 💖</h1>
+
+  <div class="countdown" id="countdown">
+    <div class="time-box">
+      <div id="days">00</div>
+      <div class="label">Days</div>
+    </div>
+    <div class="time-box">
+      <div id="hours">00</div>
+      <div class="label">Hours</div>
+    </div>
+    <div class="time-box">
+      <div id="minutes">00</div>
+      <div class="label">Minutes</div>
+    </div>
+    <div class="time-box">
+      <div id="seconds">00</div>
+      <div class="label">Seconds</div>
+    </div>
+  </div>
+
+  <canvas class="confetti" id="confetti"></canvas>
+
+  <script>
+    const targetDate = new Date("2025-06-22T03:00:00Z").getTime();
+    const daysEl = document.getElementById("days");
+    const hoursEl = document.getElementById("hours");
+    const minutesEl = document.getElementById("minutes");
+    const secondsEl = document.getElementById("seconds");
+
+    function updateCountdown() {
+      const now = new Date().getTime();
+      const gap = targetDate - now;
+
+      const days = Math.floor(gap / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((gap % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const minutes = Math.floor((gap % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((gap % (1000 * 60)) / 1000);
+
+      daysEl.textContent = String(days).padStart(2, '0');
+      hoursEl.textContent = String(hours).padStart(2, '0');
+      minutesEl.textContent = String(minutes).padStart(2, '0');
+      secondsEl.textContent = String(seconds).padStart(2, '0');
+    }
+
+    setInterval(updateCountdown, 1000);
+
+    const confetti = document.getElementById("confetti");
+    const ctx = confetti.getContext("2d");
+    let pieces = [];
+
+    function HeartPiece() {
+      this.x = Math.random() * confetti.width;
+      this.y = Math.random() * confetti.height;
+      this.size = Math.random() * 12 + 6;
+      const brightColors = ["#ff69b4", "#ff1493", "#ff85c1", "#ff6ec7", "#ffa7d1", "#ffc0cb"];
+      this.color = brightColors[Math.floor(Math.random() * brightColors.length)];
+      this.dy = Math.random() * 2 + 1;
+    }
+
+    function drawHeart(ctx, x, y, size, color) {
+      ctx.save();
+      ctx.beginPath();
+      let topCurveHeight = size * 0.3;
+      ctx.moveTo(x, y + topCurveHeight);
+      ctx.bezierCurveTo(x, y, x - size / 2, y, x - size / 2, y + topCurveHeight);
+      ctx.bezierCurveTo(x - size / 2, y + size, x, y + size, x, y + size * 1.5);
+      ctx.bezierCurveTo(x, y + size, x + size / 2, y + size, x + size / 2, y + topCurveHeight);
+      ctx.bezierCurveTo(x + size / 2, y, x, y, x, y + topCurveHeight);
+      ctx.closePath();
+      ctx.fillStyle = color;
+      ctx.fill();
+      ctx.restore();
+    }
+
+    function updatePieces() {
+      ctx.clearRect(0, 0, confetti.width, confetti.height);
+      for (let piece of pieces) {
+        drawHeart(ctx, piece.x, piece.y, piece.size, piece.color);
+        piece.y += piece.dy;
+        if (piece.y > confetti.height) {
+          piece.y = -piece.size * 1.5;
+          piece.x = Math.random() * confetti.width;
+        }
+      }
+    }
+
+    function animate() {
+      updatePieces();
+      requestAnimationFrame(animate);
+    }
+
+    function initConfetti() {
+      confetti.width = window.innerWidth;
+      confetti.height = window.innerHeight;
+      pieces = [];
+      for (let i = 0; i < 50; i++) {
+        pieces.push(new HeartPiece());
+      }
+      animate();
+    }
+
+    window.addEventListener("resize", () => {
+      confetti.width = window.innerWidth;
+      confetti.height = window.innerHeight;
+    });
+
+    initConfetti();
+  </script>
+</body>
+</html>
